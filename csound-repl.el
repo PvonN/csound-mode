@@ -37,6 +37,7 @@
   :prefix "csound-repl-"
   :group 'csound-mode)
 
+(defvar csound-executable)
 (defvar csound-repl--csound-server)
 (defvar csound-repl--udp-client-proc)
 (defvar csound-repl--console-client-proc)
@@ -507,7 +508,7 @@
 
 (defun csound-repl--start-server (port console-port sr ksmps nchnls zero-db-fs)
   (start-process "Csound Server" csound-repl-buffer-name
-                 "csound" "-odac"
+                 csound-executable "-odac"
                  (format "--port=%s" port)
                  (format "--udp-console=127.0.0.1:%s" console-port)
                  (format "--sample-rate=%s" sr)
