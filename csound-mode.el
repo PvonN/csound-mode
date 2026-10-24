@@ -46,6 +46,11 @@
   :prefix "csound-mode-"
   :group 'languages)
 
+(defcustom csound-executable "csound"
+  "Name or absolute path of the Csound executable used by csound-mode."
+  :group 'csound-mode
+  :type 'string)
+
 (defvar csound-mode-syntax-table
   (let ((st (make-syntax-table)))
     (modify-syntax-entry ?_ "w" st)
@@ -80,11 +85,12 @@
   "Play the csound file in current buffer."
   (interactive)
   (if csound-repl-start-server-p
-      (compile (format "csound %s %s" csound-play-flags (shell-quote-argument (buffer-file-name))))
+      (compile (format "%s %s %s"
+					   (shell-quote-argument csound-executable)
+					   csound-play-flags
+					   (shell-quote-argument (buffer-file-name))))
     (process-send-string csound-repl--udp-client-proc
-                         (buffer-substring
-                          (point-min) (point-max)))))
-
+                         (buffer-substring (point-min) (point-max)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; csound-abort-compilation
@@ -134,7 +140,8 @@
                      filename))
          (file-format (or (file-name-extension filename) "wav")))
     (if csound-repl-start-server-p
-        (compile (format "csound %s %s -o %s --format=%s %s"
+        (compile (format "%s %s %s -o %s --format=%s %s"
+						 (shell-quote-argument csound-executable)
                          csound-render-flags
                          (shell-quote-argument (buffer-file-name))
                          (shell-quote-argument filename)
